@@ -15,7 +15,7 @@ export interface CommentModel {
   body: string;
   postId: number;
   user: UserModel
-  createdA?: Date;
+  createdAt?: Date;
 }
 
 export interface UserModel {

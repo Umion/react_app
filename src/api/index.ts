@@ -7,13 +7,13 @@ enum Api {
 }
 
 export const apiGetComments = (): Promise<RawResponse> => {
-  return defHttp.get(Api.GET_COMMENTS, { params: { limit: 10 } })
+  return defHttp.get(Api.GET_COMMENTS, { params: { limit: 5 } })
 }
 
 export const apiCreateComment = (item: CreateCommentModel): Promise<CommentModel> => {
-  const recipe = {
+  const comment = {
     id: getRandomId(),
     ...item
   }
-  return Promise.resolve(recipe)
+  return Promise.resolve(comment)
 }

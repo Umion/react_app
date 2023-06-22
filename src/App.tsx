@@ -1,54 +1,63 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiGetComments } from "./api";
+import { CommentModel } from "./api/model";
 import { TheHeader } from "./components/application/TheHeader";
+import { CommentInput } from "./components/CommentInput";
 import { CommentItem } from "./components/CommentItem";
 
-const comm = [
-  {
-    id: 1,
-    body: "This is some awesome thinking!",
-    postId: 100,
-    user: {
-      id: 63,
-      username: "eburras1q",
-    },
-  },
-  {
-    id: 2,
-    body: "What terrific math skills you’re showing!",
-    postId: 27,
-    user: {
-      id: 71,
-      username: "omarsland1y",
-    },
-  },
-  {
-    id: 3,
-    body: "You are an amazing writer!",
-    postId: 61,
-    user: {
-      id: 29,
-      username: "jissetts",
-    },
-  },
-];
-
 function App() {
+  const [comments, setComments] = useState<CommentModel[]>([]);
+  const commentsEndRef = useRef<null | HTMLDivElement>(null);
+
+  const removeComment = (id: number) => {
+    const data = comments.filter((item) => item.id !== id);
+    setComments(data);
+  };
+
+  const addComment = (newComment: CommentModel) => {
+    setComments([...comments, newComment]);
+    scrollToBottom();
+  };
+
+  const scrollToBottom = () => {
+    commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     async function fetchData() {
       const { data } = await apiGetComments();
-      console.log(data);
+      setComments(data.comments);
     }
     fetchData();
   }, []);
 
   return (
-    <div style={{ paddingTop: "80px" }}>
+    <div className="main">
       <TheHeader />
-      <div className="container">
-        {comm.map((item) => {
-          return <CommentItem key={item.id} item={item} />;
-        })}
+      <div className="main__content">
+        <div className="content">
+          <div className="container">
+            {!comments.length ? (
+              <p style={{ textAlign: "center" }}>
+                No data. Your comment can be the first
+              </p>
+            ) : (
+              <>
+                {comments.map((item: CommentModel) => {
+                  return (
+                    <CommentItem
+                      key={item.id}
+                      item={item}
+                      onRemove={removeComment}
+                    />
+                  );
+                })}
+              </>
+            )}
+            <div style={{ height: "100px" }} ref={commentsEndRef} />
+          </div>
+        </div>
+        <CommentInput onCreate={addComment} />
       </div>
     </div>
   );
